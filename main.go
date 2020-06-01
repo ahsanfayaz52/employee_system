@@ -1,53 +1,40 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
+
+	"employee_system/handlers"
+
 	"log"
 	"net/http"
-
+	"os"
 
 )
-type userData struct {
-	Name    string
-	Address string
-}
 
 
-func homePage(writer http.ResponseWriter,request *http.Request) {
-	switch request.Method {
-	case "GET":
-		http.ServeFile(writer, request, "form.html")
-	case "POST":
-
-		name := request.FormValue("name")
-		address := request.FormValue("address")
-		data := userData{Name: name, Address:address}
-		result,err := json.Marshal( data)
-		if (err != nil){
-			fmt.Fprintf(writer,"Error occured" ,err )
-		}
-		fmt.Fprintf(writer,string(result ))
+func main() {
 
 
-	default:
-		fmt.Fprintf(writer, "Sorry, only GET and POST methods are supported.")
 
+	l := log.New(os.Stdout, "employee_system", log.LstdFlags)
+
+	// create the handlers
+	ph := handlers.NewEmployee(l)
+
+	// create a new serve mux and register the handlers
+	sm := http.NewServeMux()
+	sm.Handle("/", ph)
+
+	// create a new server
+	l.Println("Starting server on port 5000")
+
+	err :=http.ListenAndServe(":5000",sm)
+	if err != nil {
+		l.Printf("Error starting server: %s\n", err)
+		os.Exit(1)
 	}
 
 
 
-}
 
-
-
-func handleRequests(){
-	http.HandleFunc("/",homePage)
-	log.Fatal(http.ListenAndServe(":5000",nil))
 
 }
-func main(){
-	handleRequests();
-
-}
-
