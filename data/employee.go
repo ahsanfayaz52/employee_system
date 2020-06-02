@@ -16,6 +16,8 @@ import (
 	"time"
 )
 
+func fm() {}
+
 // Employee defines the structure for an API product
 type Employee struct {
 	ID   primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
